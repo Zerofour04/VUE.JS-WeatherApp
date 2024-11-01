@@ -1,72 +1,77 @@
 <template>
-    <h1>{{ msg }}</h1>
-
-    <div class="card flex justify-center">
-        <Button label="Submit" />
-    </div>
-    <div class="card">
-        <Toast />
-        <FileUpload
-            name="demo[]"
-            url="/api/upload"
-            @upload="onAdvancedUpload($event)"
-            :multiple="true"
-            accept="image/*"
-            :maxFileSize="1000000">
-            <template #empty>
-                <span>Drag and drop files to here to upload.</span>
-            </template>
-        </FileUpload>
-    </div>
-
-    <div class="card">
-        <button type="button" @click="count++">count is {{ count }}</button>
-        <p>
-            Edit
-            <code>components/WeatherApp.vue</code> to test HMR
-        </p>
-    </div>
-
+    <div class="card flex justify-center"></div>
     <Card>
-        <template #title>Simple Card</template>
+        <template #title>
+            <div class="flex align-items-center gap-2">
+                <span>Weather Forecast</span>
+            </div>
+        </template>
         <template #content>
             <p class="m-0">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore sed consequuntur error repudiandae
-                numquam deserunt quisquam repellat libero asperiores earum nam nobis, culpa ratione quam perferendis
-                esse, cupiditate neque quas!
-            </p>
+                Gib deine Stadt ein, um die aktuelle Wetterlage zu erhalten.
+        </p>
+            <div class="flex flex-row gap-2 align-items-center">
+                <InputText v-model="city" placeholder="Enter city name" @keyup.enter="getWeather" />
+                <Button label="Search" icon="pi pi-search" @click="getWeather" severity="primary" />
+            </div>
+            <div v-if="weatherData" class="mt-3">
+                <div class="flex flex-column gap-2">
+                    <h2 class="m-0">{{ weatherData.name }}</h2>
+                    <div class="flex align-items-center gap-3">
+                        <i class="pi pi-thermometer text-xl"></i>
+                        <span class="text-xl">{{ Math.round(weatherData.main.temp) }}°C</span>
+                    </div>
+                    <div class="flex align-items-center gap-3">
+                        <i class="pi pi-cloud text-xl"></i>
+                        <span class="text-xl capitalize">{{ weatherData.weather[0].description }}</span>
+                    </div>
+                    <div class="flex align-items-center gap-3">
+                        <i class="pi pi-percentage text-xl"></i>
+                        <span class="text-xl">Luftfeuchtigkeit: {{ weatherData.main.humidity }}%</span>
+                    </div>
+                </div>
+            </div>
         </template>
     </Card>
-
-    <p>
-        Check out
-        <a href="https://vuejs.org/guide/quick-start.html#local" target="_blank">create-vue</a>, the official Vue + Vite
-        starter
-    </p>
-    <p>
-        Install
-        <a href="https://github.com/vuejs/language-tools" target="_blank">Volar</a>
-        in your IDE for a better DX
-    </p>
-    <p class="read-the-docs">Click on the Vite and Vue logos to learn more</p>
+    <br/>
 </template>
+
 
 <script setup>
 import { ref } from 'vue';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
-import FileUpload from 'primevue/fileupload';
-import { useToast } from 'primevue/usetoast';
+import InputText from 'primevue/inputtext';
+
+const count = ref(0);
+
+const city = ref('');
+const weatherData = ref(null);
+
+const getWeather = async () => {
+    if (!city.value) return;
+
+    try {
+        const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
+        const response = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?q=${city.value}&units=metric&lang=de&appid=${API_KEY}`
+        );
+
+        if (!response.ok) {
+            throw new Error('City not found');
+        }
+
+        weatherData.value = await response.json();
+        console.log(weatherData.value);
+    } catch (error) {
+        weatherData.value = null;
+    }
+};
 
 defineProps({
     msg: String
 });
 
-const count = ref(0);
 </script>
 
-<style scoped>
-.read-the-docs {
-    color: #888;
-}
-</style>
+<style scoped></style>
