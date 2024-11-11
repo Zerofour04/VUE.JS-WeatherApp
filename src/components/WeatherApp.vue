@@ -7,9 +7,7 @@
             </div>
         </template>
         <template #content>
-            <p class="m-0">
-                Gib deine Stadt ein, um die aktuelle Wetterlage zu erhalten.
-        </p>
+            <p class="m-0">Gib deine Stadt ein, um die aktuelle Wetterlage zu erhalten.</p>
             <div class="flex flex-row gap-2 align-items-center">
                 <InputText v-model="city" placeholder="Enter city name" @keyup.enter="getWeather" />
                 <Button label="Search" icon="pi pi-search" @click="getWeather" severity="primary" />
@@ -20,6 +18,13 @@
                     <div class="flex align-items-center gap-3">
                         <i class="pi pi-thermometer text-xl"></i>
                         <span class="text-xl">{{ Math.round(weatherData.main.temp) }}°C</span>
+                    </div>
+                    <div class="flex align-items-center gap-3">
+                        <img
+                            :src="`http://openweathermap.org/img/w/${weatherData.weather[0].icon}.png`"
+                            :alt="weatherData.weather[0].description"
+                            class="weather-icon" />
+                        <span class="text-xl">{{ weatherData.weather[0].description }}</span>
                     </div>
                     <div class="flex align-items-center gap-3">
                         <i class="pi pi-cloud text-xl"></i>
@@ -33,9 +38,8 @@
             </div>
         </template>
     </Card>
-    <br/>
+    <br />
 </template>
-
 
 <script setup>
 import { ref } from 'vue';
@@ -71,7 +75,6 @@ const getWeather = async () => {
 defineProps({
     msg: String
 });
-
 </script>
 
 <style scoped></style>

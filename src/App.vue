@@ -1,24 +1,20 @@
-<script setup>
-import WeatherApp from './components/WeatherApp.vue';
-import Header from './components/Header.vue';
-</script>
-
 <template>
-    <Header />
-    <WeatherApp msg="Vite + Vue" />
+    <Header @weather-data="handleWeatherData" @weather-error="handleWeatherError" />
+    <WeatherApp :weatherData="weatherData" />
 </template>
 
-<style scoped>
-.logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-}
-.logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-    filter: drop-shadow(0 0 2em #42b883aa);
-}
-</style>
+<script setup>
+import { ref } from 'vue';
+import Header from './components/Header.vue';
+import WeatherApp from './components/WeatherApp.vue';
+
+const weatherData = ref(null);
+
+const handleWeatherData = (data) => {
+    weatherData.value = data;
+};
+
+const handleWeatherError = () => {
+    weatherData.value = null;
+};
+</script>
